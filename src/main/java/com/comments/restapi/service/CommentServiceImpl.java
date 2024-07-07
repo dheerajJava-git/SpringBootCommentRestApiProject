@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comments updateComment(Long id, Comments comments) {
+    public Comments updateComment(Long id, Comments comments) throws CommentNotFoundException {
 
         Comments existingComment = commentRepository.findById(id).orElse(null);
 
@@ -58,15 +58,19 @@ public class CommentServiceImpl implements CommentService {
         }
 
         if (!existingComment.getUsername().equals(comments.getUsername())) {
-            throw new UsernameChangeException("Username cannot be changed.");
+            throw new UsernameChangeException("User ID and username must be the same for a comment and cannot allow to be changed/modify. ");
         }
         existingComment.setComment(comments.getComment());
         comments.setDateofcomment(LocalDateTime.now());
         return commentRepository.save(existingComment);
+
     }
 
     @Override
     public void deleteComment(Long id) {
+        if (!commentRepository.existsById(id)) {
+            throw new CommentNotFoundException("Comment not found for id: " + id);
+        }
         commentRepository.deleteById(id);
     }
 
