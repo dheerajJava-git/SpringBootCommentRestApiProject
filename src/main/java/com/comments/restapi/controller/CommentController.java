@@ -60,8 +60,10 @@ public class CommentController {
         try {
             commentService.updateComment(id, comments);
             return ResponseEntity.ok("Comment updated successfully");
-        } catch (CommentNotFoundException | UsernameChangeException e) {
+        } catch (CommentNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UsernameChangeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
