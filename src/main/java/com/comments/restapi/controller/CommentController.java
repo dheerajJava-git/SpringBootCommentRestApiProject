@@ -22,44 +22,42 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping
-    public Comments createComment(@RequestBody Comments comments) {
-        return commentService.createComment(comments);
+    public ResponseEntity<Comments> createComment(@RequestBody Comments comments) {
+        Comments createdComment = commentService.createComment(comments);
+        return ResponseEntity.ok(createdComment);
     }
 
     @GetMapping
-    public List<Comments> getAllComments() {
-        return commentService.getAllComments();
+    public ResponseEntity<List<Comments>> getAllComments() {
+        List<Comments> comments = commentService.getAllComments();
+        return ResponseEntity.ok(comments);
     }
 
     @GetMapping("/search/username")
-    public ResponseEntity<String> getCommentsByUsername(@RequestParam(value = "username") String username) {
-
+    public ResponseEntity<?> getCommentsByUsername(@RequestParam(value = "username") String username) {
         try {
-            commentService.getCommentsByUsername(username);
-            return ResponseEntity.ok("Comments fetched successfully by username");
+            List<Comments> comments = commentService.getCommentsByUsername(username);
+            return ResponseEntity.ok(comments);
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-
     }
 
-
     @GetMapping("/search/date")
-    public ResponseEntity<String> getCommentsByDate(@RequestParam(value = "date") LocalDateTime date) {
-
+    public ResponseEntity<?> getCommentsByDate(@RequestParam(value = "date") LocalDateTime date) {
         try {
-            commentService.getCommentsByDate(date);
-            return ResponseEntity.ok("Comments fetched successfully by date");
+            List<Comments> comments = commentService.getCommentsByDate(date);
+            return ResponseEntity.ok(comments);
         } catch (DateNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateComment(@PathVariable("id") Long id, @RequestBody Comments comments) {
+    public ResponseEntity<?> updateComment(@PathVariable("id") Long id, @RequestBody Comments comments) {
         try {
-            commentService.updateComment(id, comments);
-            return ResponseEntity.ok("Comment updated successfully");
+            Comments updatedComment = commentService.updateComment(id, comments);
+            return ResponseEntity.ok(updatedComment);
         } catch (CommentNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (UsernameChangeException e) {
@@ -67,20 +65,20 @@ public class CommentController {
         }
     }
 
-
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComment(@PathVariable("id") Long id) {
         try {
             commentService.deleteComment(id);
-            return ResponseEntity.ok("Comment delete successfully");
+            return ResponseEntity.ok("Comment with id " + id + " deleted successfully");
         } catch (CommentNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-
     @DeleteMapping
-    public void deleteAllComments() {
+    public ResponseEntity<String> deleteAllComments() {
         commentService.deleteAllComments();
+        return ResponseEntity.ok("All comments deleted successfully");
     }
+
 }
